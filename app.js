@@ -185,16 +185,7 @@ function closeModal() {
 
 /* ── CLASS OPTIONS ───────────────────────────────────────── */
 function classOptions(selected = '') {
-  const defaults = [
-    'JSS 1A','JSS 1B','JSS 1C',
-    'JSS 2A','JSS 2B','JSS 2C',
-    'JSS 3A','JSS 3B','JSS 3C',
-    'SSS 1A','SSS 1B','SSS 1C',
-    'SSS 2A','SSS 2B','SSS 2C',
-    'SSS 3A','SSS 3B','SSS 3C',
-  ];
-  const saved = DB.get('classes');
-  const list  = saved.length ? saved.map(c => c.name) : defaults;
+  const list = ['Year 7','Year 8','Year 9','Year 10','Year 11','Year 12'];
   return `<option value="">Select Class</option>` +
     list.map(c => `<option value="${c}"${c === selected ? ' selected' : ''}>${c}</option>`).join('');
 }
@@ -266,8 +257,10 @@ function sidebarHTML(activePage) {
     { id:'attendance',  label:'Attendance',   icon:'📋', href:'attendance.html'        },
     { id:'grades',      label:'Grades',       icon:'📝', href:'grades.html'            },
     { id:'fees',        label:'Finance',      icon:'💰', href:'fees.html'              },
-    { id:'reports',     label:'Reports',      icon:'📄', href:'report-card.html'       },
-    { id:'settings',    label:'Settings',     icon:'⚙️', href:'settings.html'          },
+    { id:'reports',     label:'Report Cards', icon:'📄', href:'report-card.html'       },
+    { id:'termresults', label:'Term Results',  icon:'🏆', href:'term-results.html'       },
+    { id:'feestructure',label:'Fee Structure', icon:'🧾', href:'fee-structure.html'      },
+    { id:'settings',    label:'Settings',     icon:'⚙️', href:'settings.html'           },
   ];
   return `
     <aside class="sidebar" id="sidebar">
