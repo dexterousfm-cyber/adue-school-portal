@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADUE - Register Student</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+:root {
+    --red: #8B0000;
+    --dark-red: #5C0000;
+    --green: #28a745;
+    --bg: #f5f5f5;
+    --border: #ddd;
+}
+
+body { background:var(--bg); min-height:100vh; }
+
+/* HEADER */
+.header {
+    background:var(--red); color:white;
+    padding:0 1.5rem; display:flex; justify-content:space-between; align-items:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2); position:fixed;
+    top:0; left:0; right:0; z-index:100; height:60px;
+}
+.logo { font-weight:bold; font-size:1.1rem; display:flex; align-items:center; gap:8px; }
+.header-actions { display:flex; align-items:center; gap:12px; }
+.welcome-text { font-size:0.9rem; opacity:0.9; }
+.btn-hdr {
+    padding:7px 14px; border:1px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.15);
+    color:white; border-radius:5px; cursor:pointer; font-size:0.85rem; font-weight:600;
+    transition:background 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:5px;
+}
+.btn-hdr:hover { background:rgba(255,255,255,0.3); }
+
+/* LAYOUT */
+.container { display:flex; margin-top:60px; min-height:calc(100vh - 60px); }
+
+/* SIDEBAR */
+.sidebar {
+    width:240px; background:var(--red); color:white;
+    padding:1.2rem 0; position:fixed; height:calc(100vh - 60px); overflow-y:auto;
+}
+.nav-item {
+    padding:12px 1.5rem; display:flex; align-items:center; gap:10px;
+    cursor:pointer; transition:all 0.2s; border-left:4px solid transparent;
+    text-decoration:none; color:rgba(255,255,255,0.88); font-size:0.9rem;
+}
+.nav-item:hover { background:rgba(255,255,255,0.12); border-left-color:rgba(255,255,255,0.5); }
+.nav-item.active { background:rgba(255,255,255,0.18); border-left-color:white; font-weight:700; }
+
+/* MAIN */
+.main { flex:1; margin-left:240px; padding:2rem; background:var(--bg); }
+
+.back-link {
+    color:var(--red); text-decoration:none; font-size:0.88rem;
+    display:inline-flex; align-items:center; gap:5px; margin-bottom:8px; font-weight:600;
+}
+.back-link:hover { text-decoration:underline; }
+.page-title { color:var(--red); font-size:1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:10px; }
+
+/* STATS */
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; margin-bottom:2rem; }
+.stat-card {
+    background:white; border-radius:8px; padding:1.4rem; text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.07); border-top:4px solid var(--red); transition:transform 0.2s;
+}
+.stat-card:hover { transform:translateY(-2px); }
+.stat-number { font-size:2.2rem; font-weight:bold; color:var(--red); line-height:1; margin-bottom:6px; }
+.stat-label { color:#666; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.5px; }
+
+/* FORM */
+.form-container {
+    background:white; border-radius:8px; padding:2rem;
+    box-shadow:0 2px 8px rgba(0,0,0,0.07); margin-bottom:2rem; border-top:4px solid var(--red);
+}
+.section-title {
+    color:var(--red); font-size:1.05rem; font-weight:700;
+    margin-bottom:1.3rem; padding-bottom:0.6rem; border-bottom:2px solid #f0f0f0;
+    display:flex; align-items:center; gap:8px;
+}
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.3rem; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+.form-group.full { grid-column:1/-1; }
+.form-group label { font-weight:600; color:#555; font-size:0.88rem; }
+.form-group label .req { color:var(--red); }
+.form-group input, .form-group select, .form-group textarea {
+    padding:11px 13px; border:1px solid var(--border); border-radius:6px;
+    font-size:0.95rem; background:#fafafa; transition:all 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline:none; border-color:var(--red); background:white;
+    box-shadow:0 0 0 3px rgba(139,0,0,0.08);
+}
+.form-group small { color:#888; font-size:0.78rem; }
+.form-group textarea { resize:vertical; min-height:75px; }
+
+.file-upload {
+    border:2px dashed var(--border); border-radius:8px; padding:1.8rem;
+    text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa;
+}
+.file-upload:hover { border-color:var(--red); background:rgba(139,0,0,0.02); }
+.file-upload input { display:none; }
+.file-name { color:var(--red); font-weight:600; font-size:0.88rem; margin-top:6px; }
+
+.form-actions { display:flex; gap:1rem; margin-top:1.8rem; padding-top:1.3rem; border-top:2px solid #f0f0f0; }
+.btn-primary {
+    background:var(--red); color:white; padding:12px 28px; border:none;
+    border-radius:6px; cursor:pointer; font-size:0.95rem; font-weight:700;
+    display:inline-flex; align-items:center; gap:7px; transition:all 0.3s;
+}
+.btn-primary:hover { background:var(--dark-red); transform:translateY(-1px); box-shadow:0 4px 12px rgba(139,0,0,0.3); }
+.btn-secondary {
+    background:#6c757d; color:white; padding:12px 22px; border:none;
+    border-radius:6px; cursor:pointer; font-size:0.95rem; font-weight:600;
+    display:inline-flex; align-items:center; gap:7px; transition:all 0.2s;
+}
+.btn-secondary:hover { background:#5a6268; }
+
+/* ALERT */
+.alert {
+    padding:12px 16px; border-radius:6px; margin-bottom:1rem;
+    display:none; align-items:center; gap:10px; font-weight:600;
+    border-left:4px solid;
+}
+.alert.show { display:flex; }
+.alert-success { background:#d4edda; color:#155724; border-color:var(--green); }
+.alert-error   { background:#f8d7da; color:#721c24; border-color:#dc3545; }
+
+/* STUDENTS TABLE */
+h3.table-heading { color:var(--red); font-size:1.2rem; margin:1.5rem 0 1rem; }
+.table-container { background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.07); margin-bottom:40px; }
+table { width:100%; border-collapse:collapse; }
+th { background:var(--red); color:white; padding:13px 15px; text-align:left; font-size:12px; text-transform:uppercase; }
+td { padding:13px 15px; border-bottom:1px solid #f0f0f0; font-size:13px; }
+tr:hover td { background:#fff5f5; }
+td img { width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid var(--red); }
+.avatar-ph { width:40px; height:40px; border-radius:50%; background:#f0f0f0; border:2px solid var(--red); display:inline-flex; align-items:center; justify-content:center; font-size:18px; }
+.btn-sm { padding:5px 11px; border:none; border-radius:4px; cursor:pointer; font-size:11px; font-weight:700; margin-right:3px; }
+.btn-edit { background:var(--green); color:white; }
+.btn-del  { background:#dc3545; color:white; }
+.empty-state { text-align:center; padding:50px; color:#999; font-size:14px; }
+
+@media(max-width:768px) {
+    .sidebar { display:none; }
+    .main { margin-left:0; padding:1rem; }
+    .stats-grid { grid-template-columns:1fr; }
+    .form-grid { grid-template-columns:1fr; }
+    .form-group.full { grid-column:1; }
+    .form-actions { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="logo">🏫 ADUE International School</div>
+    <div class="header-actions">
+        <span class="welcome-text" id="adminName">Welcome, Admin</span>
+        <a href="admin_dashboard.html" class="btn-hdr">🏠 Dashboard</a>
+        <button class="btn-hdr" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <a href="admin_dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="register_student.html" class="nav-item active">👨‍🎓 Students</a>
+        <a href="register_teacher.html" class="nav-item">👨‍🏫 Teachers</a>
+        <a href="admin_dashboard.html" class="nav-item">📚 Classes</a>
+        <a href="admin_dashboard.html" class="nav-item">📋 Attendance</a>
+        <a href="admin_dashboard.html" class="nav-item">📝 Grades</a>
+        <a href="admin_dashboard.html" class="nav-item">💰 Finance</a>
+        <a href="admin_dashboard.html" class="nav-item">📈 Reports</a>
+        <a href="admin_dashboard.html" class="nav-item">⚙️ Settings</a>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+        <div id="alertBox" class="alert"></div>
+
+        <a href="admin_dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">👨‍🎓 Register New Student</h1>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number" id="totalStudents">0</div><div class="stat-label">Total Students</div></div>
+            <div class="stat-card"><div class="stat-number" id="maleCount">0</div><div class="stat-label">Male</div></div>
+            <div class="stat-card"><div class="stat-number" id="femaleCount">0</div><div class="stat-label">Female</div></div>
+        </div>
+
+        <!-- Form -->
+        <div class="form-container">
+            <div class="section-title">📝 Student Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>First Name <span class="req">*</span></label>
+                    <input type="text" id="firstName" placeholder="e.g., Emeka">
+                </div>
+                <div class="form-group">
+                    <label>Last Name <span class="req">*</span></label>
+                    <input type="text" id="lastName" placeholder="e.g., Okafor">
+                </div>
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" id="studentID" placeholder="e.g., STU001">
+                    <small>Leave blank to auto-generate</small>
+                </div>
+                <div class="form-group">
+                    <label>Gender <span class="req">*</span></label>
+                    <select id="gender">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Class <span class="req">*</span></label>
+                    <select id="studentClass">
+                        <option value="">Select Class</option>
+                        <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                        <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="dob">
+                </div>
+                <div class="form-group">
+                    <label>Parent / Guardian Name <span class="req">*</span></label>
+                    <input type="text" id="parentName" placeholder="e.g., Mr. Okafor John">
+                </div>
+                <div class="form-group">
+                    <label>Parent / Guardian Phone <span class="req">*</span></label>
+                    <input type="tel" id="parentPhone" placeholder="+234 800 000 0000">
+                </div>
+                <div class="form-group">
+                    <label>Parent Email</label>
+                    <input type="email" id="parentEmail" placeholder="parent@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Admission Date <span class="req">*</span></label>
+                    <input type="date" id="admissionDate">
+                </div>
+                <div class="form-group">
+                    <label>State of Origin</label>
+                    <input type="text" id="stateOfOrigin" placeholder="e.g., Lagos">
+                </div>
+                <div class="form-group">
+                    <label>Religion</label>
+                    <select id="religion">
+                        <option value="">Select</option>
+                        <option>Christianity</option>
+                        <option>Islam</option>
+                        <option>Traditional</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>Home Address</label>
+                    <textarea id="address" placeholder="Student's home address"></textarea>
+                </div>
+                <div class="form-group full">
+                    <label>Profile Picture</label>
+                    <div class="file-upload" onclick="document.getElementById('profilePic').click()">
+                        <input type="file" id="profilePic" accept="image/*" onchange="handleFileSelect(this)">
+                        <div>📷 Click to upload student photo (optional)</div>
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-primary" onclick="registerStudent()">✓ Register Student</button>
+                <button class="btn-secondary" onclick="resetForm()">↺ Reset Form</button>
+            </div>
+        </div>
+
+        <!-- Students Table -->
+        <h3 class="table-heading">🎓 Registered Students</h3>
+        <div class="table-container">
+            <table id="studentsTable">
+                <thead>
+                    <tr><th>Photo</th><th>ID</th><th>Name</th><th>Class</th><th>Gender</th><th>Parent Contact</th><th>Actions</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display:none;">
+                <p>No students registered yet. Fill the form above to add one.</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+// ==================== AUTH ====================
+function getSession() {
+    try { return JSON.parse(sessionStorage.getItem('adue_session') || 'null'); }
+    catch(e) { return null; }
+}
+const currentUser = getSession();
+if (!currentUser) { window.location.href = 'index.html'; }
+
+document.getElementById('adminName').textContent = 'Welcome, ' + (currentUser.name || currentUser.email || 'Admin');
+// ==================== DATA ====================
+function getStudents() { return JSON.parse(localStorage.getItem('students')) || []; }
+function saveStudents(arr) { localStorage.setItem('students', JSON.stringify(arr)); }
+
+let selectedFile = null;
+
+// ==================== ALERT ====================
+function showAlert(message, type = 'success') {
+    const box = document.getElementById('alertBox');
+    box.textContent = message;
+    box.className = 'alert alert-' + type + ' show';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => { box.className = 'alert'; }, 4500);
+}
+
+// ==================== FILE SELECT ====================
+function handleFileSelect(input) {
+    selectedFile = input.files[0] || null;
+    document.getElementById('fileName').textContent = selectedFile ? '✅ ' + selectedFile.name : '';
+}
+
+// ==================== STATS ====================
+function updateStats() {
+    const students = getStudents();
+    document.getElementById('totalStudents').textContent = students.length;
+    document.getElementById('maleCount').textContent = students.filter(s => s.gender === 'Male').length;
+    document.getElementById('femaleCount').textContent = students.filter(s => s.gender === 'Female').length;
+}
+
+// ==================== REGISTER ====================
+function registerStudent() {
+    const firstName   = document.getElementById('firstName').value.trim();
+    const lastName    = document.getElementById('lastName').value.trim();
+    const gender      = document.getElementById('gender').value;
+    const studentClass = document.getElementById('studentClass').value;
+    const parentName  = document.getElementById('parentName').value.trim();
+    const parentPhone = document.getElementById('parentPhone').value.trim();
+    const admissionDate = document.getElementById('admissionDate').value;
+
+    // Validation
+    if (!firstName || !lastName) { showAlert('First and Last name are required.', 'error'); return; }
+    if (!gender)        { showAlert('Please select gender.', 'error'); return; }
+    if (!studentClass)  { showAlert('Please select a class.', 'error'); return; }
+    if (!parentName)    { showAlert('Parent/Guardian name is required.', 'error'); return; }
+    if (!parentPhone)   { showAlert('Parent/Guardian phone is required.', 'error'); return; }
+    if (!admissionDate) { showAlert('Admission date is required.', 'error'); return; }
+
+    let students = getStudents();
+
+    // Generate or validate ID
+    let id = document.getElementById('studentID').value.trim();
+    if (!id) {
+        id = 'STU' + String(students.length + 1).padStart(3, '0');
+        while (students.find(s => (s.studentID || s.id) === id)) {
+            id = 'STU' + String(parseInt(id.slice(3)) + 1).padStart(3, '0');
+        }
+    } else {
+        if (students.find(s => (s.studentID || s.id).toLowerCase() === id.toLowerCase())) {
+            showAlert('Student ID "' + id + '" already exists.', 'error'); return;
+        }
+    }
+
+    const doSave = (pic) => {
+        const student = {
+            studentID: id,
+            id: id,
+            firstName,
+            lastName,
+            name: firstName + ' ' + lastName,
+            gender,
+            class: studentClass,
+            studentClass,
+            dob: document.getElementById('dob').value,
+            parentName,
+            parentPhone,
+            parentEmail: document.getElementById('parentEmail').value.trim(),
+            admissionDate,
+            stateOfOrigin: document.getElementById('stateOfOrigin').value.trim(),
+            religion: document.getElementById('religion').value,
+            address: document.getElementById('address').value.trim(),
+            profilePicture: pic || null,
+            status: 'Active',
+            registeredBy: currentUser.role || 'admin',
+            registeredByName: currentUser.name || 'Admin',
+            registeredDate: new Date().toISOString()
+        };
+
+        students.push(student);
+        saveStudents(students);
+        resetForm();
+        renderTable();
+        updateStats();
+        showAlert(`Student "${student.name}" registered successfully! ID: ${id}`);
+    };
+
+    if (selectedFile) {
+        const reader = new FileReader();
+        reader.onload = e => doSave(e.target.result);
+        reader.readAsDataURL(selectedFile);
+    } else {
+        doSave(null);
+    }
+}
+
+// ==================== RESET ====================
+function resetForm() {
+    ['firstName','lastName','studentID','parentName','parentPhone','parentEmail',
+     'dob','stateOfOrigin','address'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    document.getElementById('gender').value = '';
+    document.getElementById('studentClass').value = '';
+    document.getElementById('religion').value = '';
+    document.getElementById('admissionDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('profilePic').value = '';
+    document.getElementById('fileName').textContent = '';
+    selectedFile = null;
+}
+
+// ==================== RENDER TABLE ====================
+function renderTable() {
+    const students = getStudents();
+    const tbody = document.querySelector('#studentsTable tbody');
+    const empty  = document.getElementById('emptyState');
+
+    if (students.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = [...students].reverse().map(s => {
+        const id   = s.studentID || s.id || '-';
+        const name = s.name || ((s.firstName || '') + ' ' + (s.lastName || '')).trim();
+        const pic  = s.profilePicture
+            ? `<img src="${s.profilePicture}" alt="${name}">`
+            : `<div class="avatar-ph">👤</div>`;
+        return `<tr>
+            <td>${pic}</td>
+            <td>${id}</td>
+            <td><strong>${name}</strong></td>
+            <td>${s.class || s.studentClass || '-'}</td>
+            <td>${s.gender || '-'}</td>
+            <td>${s.parentName || '-'} · ${s.parentPhone || '-'}</td>
+            <td>
+                <button class="btn-sm btn-edit" onclick="editStudent('${id}')">Edit</button>
+                <button class="btn-sm btn-del" onclick="deleteStudent('${id}')">Delete</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// ==================== EDIT ====================
+function editStudent(id) {
+    const students = getStudents();
+    const s = students.find(st => (st.studentID || st.id) === id);
+    if (!s) return;
+
+    const newFirstName = prompt('First Name:', s.firstName || (s.name || '').split(' ')[0]);
+    if (newFirstName === null) return;
+    const newLastName = prompt('Last Name:', s.lastName || (s.name || '').split(' ').slice(1).join(' '));
+    if (newLastName === null) return;
+    const newClass = prompt('Class (e.g. JSS 1):', s.class || s.studentClass || '');
+    if (newClass === null) return;
+    const newParentName = prompt('Parent Name:', s.parentName || '');
+    if (newParentName === null) return;
+    const newParentPhone = prompt('Parent Phone:', s.parentPhone || '');
+    if (newParentPhone === null) return;
+
+    const idx = students.findIndex(st => (st.studentID || st.id) === id);
+    students[idx].firstName  = newFirstName.trim();
+    students[idx].lastName   = newLastName.trim();
+    students[idx].name       = (newFirstName + ' ' + newLastName).trim();
+    students[idx].class      = newClass.trim();
+    students[idx].studentClass = newClass.trim();
+    students[idx].parentName = newParentName.trim();
+    students[idx].parentPhone = newParentPhone.trim();
+
+    saveStudents(students);
+    renderTable();
+    updateStats();
+    showAlert('Student updated successfully.');
+}
+
+// ==================== DELETE ====================
+function deleteStudent(id) {
+    if (!confirm('Delete this student? This cannot be undone.')) return;
+    let students = getStudents();
+    students = students.filter(s => (s.studentID || s.id) !== id);
+    saveStudents(students);
+    renderTable();
+    updateStats();
+    showAlert('Student deleted.');
+}
+
+// ==================== LOGOUT ====================
+function logout() {
+    sessionStorage.removeItem('adue_session');
+    window.location.href = 'index.html';
+}
+
+// ==================== INIT ====================
+updateStats();
+renderTable();
+</script>
+</body>
+</html>
