@@ -204,3 +204,4 @@ function closeModal() {
   const o = document.getElementById('modal-overlay');
   if (o) o.classList.remove('open');
 }
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
